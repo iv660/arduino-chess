@@ -154,6 +154,16 @@ Follow Clean Code: self-documenting names and clear structure beat comments.
 - Use a hyphen for `term - description` separators; rephrase prose with commas,
   parentheses, or a colon. Avoid en dashes and the ellipsis character too.
 
+## Commit Messages
+
+- Use conventional commit format: `type: Subject line`
+- Subject after the prefix starts with a capital letter, like a sentence
+- Examples:
+  - ✓ `feat: Add joystick input handling`
+  - ✓ `fix: Correct board rendering coordinates`
+  - ✗ `feat: add joystick input handling`
+- Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `revert`
+
 ## Libraries
 
 Current dependencies (see `platformio.ini`):
