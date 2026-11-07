@@ -25,7 +25,7 @@ The display uses SPI communication with the following connections:
 | VCC         | 5V               | Power supply |
 | GND         | GND              | Ground |
 | CS          | D10              | Chip Select (SPI) |
-| RESET       | D9               | Reset |
+| RESET       | RST              | Reset (connected to Arduino Reset pin) |
 | A0/DC       | D8               | Data/Command select |
 | SDA/MOSI    | D11              | Master Out Slave In (SPI) |
 | SCK         | D13              | Serial Clock (SPI) |
@@ -82,11 +82,11 @@ The switch is normally HIGH and goes LOW when pressed.
 - **D3:** Pause button (INPUT_PULLUP)
 - **D4:** Start button (INPUT_PULLUP)
 - **D8:** TFT DC (Data/Command)
-- **D9:** TFT Reset
 - **D10:** TFT CS (Chip Select)
 - **D11:** TFT MOSI (SPI)
 - **D12:** TFT MISO (SPI, not used by ST7735)
 - **D13:** TFT SCK (SPI) / Built-in LED
+- **RST:** TFT Reset (shared with Arduino Reset)
 
 ### Analog Pins
 - **A0:** Joystick X-axis
@@ -98,13 +98,15 @@ The switch is normally HIGH and goes LOW when pressed.
 
 ## Assembly Notes
 
-1. **SPI Conflict:** The built-in LED on pin D13 shares the SPI clock line. This may cause the LED to flicker during display updates. This is normal and does not affect functionality.
+1. **Display Reset:** The ST7735 display Reset pin is connected to the Arduino Nano Reset pin. This means both devices reset together when the Arduino is reset. No separate reset control is available in software.
 
-2. **Pull-up Resistors:** The Pause and Start buttons are configured with internal pull-up resistors in software using `INPUT_PULLUP` mode. External pull-up resistors are not required but can be added (10kΩ recommended) if needed for noise immunity.
+2. **SPI Conflict:** The built-in LED on pin D13 shares the SPI clock line. This may cause the LED to flicker during display updates. This is normal and does not affect functionality.
 
-3. **Display Orientation:** The ST7735 display can be used in different orientations. The software can rotate the display 0°, 90°, 180°, or 270° as needed.
+3. **Pull-up Resistors:** The Pause and Start buttons are configured with internal pull-up resistors in software using `INPUT_PULLUP` mode. External pull-up resistors are not required but can be added (10kΩ recommended) if needed for noise immunity.
 
-4. **Power Consumption:** 
+4. **Display Orientation:** The ST7735 display can be used in different orientations. The software can rotate the display 0°, 90°, 180°, or 270° as needed.
+
+5. **Power Consumption:** 
    - Arduino Nano: ~20 mA
    - ST7735 Display: ~20-40 mA (depending on brightness and content)
    - Total estimated: ~50-70 mA

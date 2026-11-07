@@ -23,8 +23,8 @@
 // Pin definitions for future use (based on XC Slim Pad schematic)
 // TFT Display (ST7735)
 #define TFT_CS    10
-#define TFT_RST   9
 #define TFT_DC    8
+// Note: TFT_RST is connected to Arduino RST pin (hardware reset, not controllable)
 // SPI pins: MOSI=11, MISO=12, SCK=13 (hardware SPI)
 
 // Joystick

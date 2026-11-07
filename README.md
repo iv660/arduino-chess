@@ -40,7 +40,7 @@ pio device monitor
 
 ### TFT Display (ST7735)
 - **CS:** D10
-- **RST:** D9
+- **RST:** RST (connected to Arduino Reset pin)
 - **DC:** D8
 - **MOSI:** D11 (hardware SPI)
 - **MISO:** D12 (hardware SPI)
