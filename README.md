@@ -12,7 +12,7 @@ Chess game for Arduino Nano with ST7735 TFT display and joystick controls.
 - Pause button (normally high)
 - Start button (normally high)
 
-See [HARDWARE.md](reference/3rd-party/xc-slim-pad/HARDWARE.md) for detailed hardware specifications.
+See [docs/HARDWARE_SETUP.md](docs/HARDWARE_SETUP.md) for detailed hardware setup and wiring guide.
 
 ## Development
 

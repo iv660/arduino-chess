@@ -131,7 +131,9 @@ Individual component tests can be added to verify:
 
 ## Schematic Reference
 
-See `reference/3rd-party/xc-slim-pad/xc-slim-pad-schematic.png` for the complete schematic diagram.
+![XC Slim Pad Schematic](images/xc-slim-pad-schematic.png)
+
+*XC Slim Pad hardware schematic showing all component connections.*
 
 ## Troubleshooting
 
