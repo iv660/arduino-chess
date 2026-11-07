@@ -10,3 +10,4 @@
 
 # AI Blueprint runtime state
 blueprint/.state/run.json
+/.vscode
