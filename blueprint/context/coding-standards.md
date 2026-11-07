@@ -1,175 +1,150 @@
 # Coding Standards
 
-> Your conventions. Edit these once to match your stack. The defaults below
-> assume Next.js + TypeScript + Tailwind + Prisma; change or trim anything that
-> doesn't fit your project.
->
-> Run `/onboard` after installing the Blueprint. It tunes this file to the real
-> project stack, along with `AGENTS.md`, `CLAUDE.md` when present,
-> `ai-interaction.md`, `.gitignore`, and README placement. Review the result
-> before `/overview`.
+> Your conventions. This file reflects the actual stack and constraints of the
+> Arduino Chess embedded project.
 
-## TypeScript
+## Platform
 
-- Strict mode enabled
-- No `any` types - use proper typing or `unknown`
-- Define interfaces for all props, API responses, and data models
-- Use type inference where obvious, explicit types where helpful
+**Arduino Nano (ATmega328P)**
+- 32 KB Flash (2 KB bootloader)
+- 2 KB SRAM
+- 1 KB EEPROM
+- 16 MHz clock
+- Tight memory and performance constraints
 
-## React
+## Language
 
-- Functional components only (no class components)
-- Use hooks for state and side effects
-- Keep components focused - one job per component
-- Extract reusable logic into custom hooks
+**C++11** (Arduino framework subset)
+- Avoid dynamic allocation where possible (limited heap)
+- Use stack allocation and static buffers
+- Prefer compile-time constants (`const`, `constexpr`, `#define`)
+- Use `F()` macro for string literals to keep them in flash memory
+- Be mindful of SRAM usage: every global costs memory
 
-## Next.js
+## Build System
 
-- Server components by default
-- Only use `'use client'` when needed (interactivity, hooks, browser APIs)
-- Use Server Actions for form submissions and simple mutations
-- Use API routes when you need:
-  - Webhooks (Clerk, GitHub, etc.)
-  - File uploads with progress tracking
-  - Long-running operations
-  - Specific HTTP status codes or headers
-  - Endpoints for future mobile/CLI clients
-  - Third-party integrations
-- Otherwise, fetch data directly in server components
-- Dynamic routes for item/collection pages
+**PlatformIO**
+- Framework: Arduino
+- Board: `nanoatmega328`
+- Platform: `atmelavr`
+- Build: `pio run`
+- Upload: `pio run --target upload`
+- Monitor: `pio device monitor`
 
 ## File Organization
 
-- Components: `src/components/[feature]/ComponentName.tsx`
-- Pages: `src/app/[route]/page.tsx`
-- Server Actions: `src/actions/[feature].ts`
-- Types: `src/types/[feature].ts`
-- Lib/Utils: `src/lib/[utility].ts`
+- Main sketch: `src/main.cpp`
+- Headers: `src/*.h` or `include/*.h`
+- Implementation: `src/*.cpp`
+- Hardware abstraction modules: organized by function (display, input, chess logic)
 
 ## Naming
 
-- Components: PascalCase (`ItemCard.tsx`)
-- Files: Match component name or kebab-case
-- Functions: camelCase
-- Constants: SCREAMING_SNAKE_CASE
-- Types/Interfaces: PascalCase (no prefix)
+- Files: lowercase with underscores (`chess_engine.cpp`)
+- Class files: PascalCase matching class name (`ChessBoard.cpp`, `ChessBoard.h`)
+- Functions: camelCase (`makeMove()`)
+- Classes: PascalCase (`ChessBoard`)
+- Constants: SCREAMING_SNAKE_CASE or `k` prefix (`MAX_DEPTH`, `kBoardSize`)
+- Pin definitions: ALL_CAPS with descriptive names (`TFT_CS`, `JOY_X`)
+- Local variables: camelCase
+- Member variables: camelCase or `m_` prefix when clarity helps
 
-## Styling
+## Hardware Abstraction
 
-- Tailwind CSS for all styling
-- Tailwind v4: CSS-first config (`@theme` in `globals.css`), no `tailwind.config.js`
-- Use shadcn/ui components where applicable
-- No inline styles
-- Dark mode first, light mode as option
+- Use `#define` for all pin assignments at the top of files
+- Group related pins (TFT, joystick, buttons) with comments
+- Wrap hardware access in clean functions or classes when complexity warrants it
+- Initialize all hardware in `setup()`, never assume pin states
 
-## Database
+## Memory Management
 
-- Use Prisma ORM for all database operations
-- Always use `prisma migrate dev` for schema changes (not `db push`)
-- Run `prisma migrate status` before committing to verify migrations are in sync
-- Production deployments must run `prisma migrate deploy` before the app starts
+- **No `new`/`delete` in the main loop** - dynamic allocation fragments limited SRAM
+- Use fixed-size arrays and preallocate buffers
+- Check Flash and SRAM usage after every build (PlatformIO reports it)
+- String literals go in PROGMEM via `F()` macro: `Serial.println(F("text"))`
+- Keep stack usage predictable: avoid deep recursion
 
-## Data Fetching
+## Performance
 
-- Server components fetch directly with Prisma
-- Client components use Server Actions
-- Validate all inputs with Zod
-- Scope every user-owned query by the authenticated Clerk user id (`clerkUserId`); never trust a client-supplied user id
+- Minimize allocations and copying in hot paths
+- Batch display updates to reduce SPI transactions
+- Use integer math over floating point when possible (no FPU)
+- Profile with `millis()` when optimizing timing-sensitive code
+
+## Display
+
+- Use Adafruit GFX for primitives, ST7735 library for hardware
+- Buffer small graphics operations to reduce flicker
+- Clear only changed regions when practical
+- Test visual output on real hardware (emulation is unreliable for TFT)
+
+## Input Handling
+
+- Debounce buttons in software (no hardware debounce)
+- Poll joystick analog axes, center value ~512
+- Use `INPUT_PULLUP` for all buttons (no external pull-ups)
+- Handle button state in main loop, not interrupts (simplicity over speed)
 
 ## Error Handling
 
-- Use try/catch in Server Actions
-- Return `{ success, data, error }` pattern from actions
-- Display user-friendly error messages via toast
+- No exceptions (not supported on AVR)
+- Return error codes or use bool return values
+- Validate inputs and fail visibly (serial output, error screen)
+- Use `Serial` for debugging; baud rate 115200
 
 ## Testing
 
-The blueprint installs no test runner; testing is opt-in at the project level,
-because the overlay can't know your stack. Adding unit testing is an explicit
-setup task the AI can do through the normal workflow, either as a build-plan item
-or with `/tests`. The setup should choose the stack-native runner, wire the
-scripts or commands, add a small example test, and update the Commands section
-of `AGENTS.md`.
+The blueprint installs no test runner; testing is opt-in at the project level.
+For embedded development, practical verification is:
 
-When `AGENTS.md` declares a `Verify` command, treat it as the umbrella automated
-gate. It combines only the checks this project actually has, in this order when
-available: typecheck, tests, then build. The command does not enable an absent
-test runner or replace focused evidence. It gives local work and optional CI one
-exact command to run. `/ci` owns Verify and CI setup. `/tests` adds the real test
-command to Verify when it already exists, but never creates CI only because
-testing was configured.
+- **Unit logic tests:** Use Unity test framework for native target. Test pure
+  chess logic (move generation, validation, game state) that can run on the
+  host without hardware. Configure native build target in PlatformIO for
+  host-side test execution.
+- **Hardware integration:** Verify on real Arduino Nano. Serial output,
+  LED behavior, display rendering, and input response are best validated
+  manually or with recorded observations.
+- **Build verification:** Every change must compile and fit in Flash/SRAM
+  limits. PlatformIO reports usage; watch for regressions.
 
 **The opt-in switch is one signal: a `test` command in the Commands section of
-`AGENTS.md`.** Declare one and **tests become a gate for logic-bearing steps**,
-not an optional extra; leave it out and the loop verifies logic with the evidence
-it already uses (run it, a screenshot, the build). Adding the runner is itself a
-deliberate step, never a silent mid-step install. This is the single definition
-of the switch; the skills and `ai-interaction.md` only point back here.
+`AGENTS.md`.** Declare one and tests become a gate for pure logic steps;
+leave it out and the loop verifies with build + manual hardware evidence.
 
-- **What to test (the scope rule):** pure logic where a wrong answer is possible -
-  parsers, formatters, validators, id/slug builders, server actions. These have
-  assertable inputs and outputs and real edge cases (empty, missing, malformed).
-- **What not to test:** UI components and integration-level surfaces (render or
-  export routes, anything driving a real browser or external service). Verify those
-  with a screenshot and the build, not brittle unit tests.
-- **The gate (when a runner is configured):** a build step that adds in-scope logic
-  must ship a passing test in the same reviewable diff. The project's test command
-  must be green before the step is approved, before any checkpoint commit, and
-  before `/complete` merges. UI and integration-only steps are exempt and ride on
-  screenshot plus build evidence.
-- **When it's named:** the `/feature` spec's Testing section predicts the coverage,
-  `/implement` writes the test with the step, and if a step surfaces logic the spec
-  didn't foresee, add a focused test then.
-- An empty suite should fail, not pass, so "no tests ran" never looks like "passed".
-- Test files live next to source files (for example `feature.test.ts`).
-- Run them via the project's test command (see Commands in `AGENTS.md`), not a
-  hardcoded tool name.
-
-Stack binding (swap for yours): a TypeScript app uses Vitest, `vi.mock()` for
-external dependencies (Prisma, Clerk, etc.), and `vi.useFakeTimers()` for
-time-dependent logic; a Python app would use pytest; a Go app `go test`.
-
-## Browser Verification
-
-For UI and integration behavior, prefer real browser evidence over reading the
-code and assuming it works.
-
-- Browser automation is separately opt-in through `/tests browser`. That setup
-  reuses a compatible runner or prefers Playwright for supported projects, then
-  documents the exact command as `Browser tests` in `AGENTS.md`.
-- When `Browser tests` is declared, add focused coverage for stable behavioral
-  done-whens when it is proportionate, and run the documented command during
-  `/check`. Do not assume it proves visual fidelity, real authenticated-profile
-  behavior, browser chrome, or another claim the test does not observe.
-- If no Browser tests command is declared, do not add a runner silently in the
-  middle of an unrelated feature. Use the available dev server, browser
-  screenshots, build output, API output, or manual evidence instead.
-- Browser tests are not part of the default Verify command or CI unless the user
-  separately chooses that slower gate.
-- Browser evidence is especially important for flows that click, type, submit,
-  navigate, download files, render complex layouts, or depend on client-side
-  state.
+- **What to test:** pure chess logic (move generation, validation, game state
+  transitions, position evaluation). These have assertable inputs/outputs and
+  real edge cases (en passant, castling, checkmate detection).
+- **What not to test:** display rendering, button debouncing, hardware I/O.
+  Verify those with real hardware and screenshots.
+- **The gate (when a runner is configured):** a build step that adds testable
+  logic must ship a passing test in the same diff. Hardware-only steps are
+  exempt and ride on build + manual evidence.
 
 ## Code Quality
 
-- No commented-out code unless specified
-- No unused imports or variables
-- Keep functions under 50 lines when possible
+- **Clean Code principles:** Follow Clean Code practices when they don't harm
+  performance or memory usage. Prefer readable, maintainable code.
+- **No magic numbers:** Replace all magic numbers with named constants
+  (`#define`, `const`, or `constexpr`). Every numeric literal should have
+  a descriptive name explaining its purpose.
+- No commented-out code
+- No unused variables or includes
+- Keep functions focused: under 50 lines when possible
+- Extract complex logic into named helper functions
 
 ## Comments
 
 Write code that explains itself; comment only what the code cannot say.
-Over-commenting is a common AI tell, so resist it.
+Follow Clean Code: self-documenting names and clear structure beat comments.
 
 - Comment the **why**, not the **what**. Delete any comment that restates the code.
-- No banner/header blocks, section dividers, or step-by-step narration of obvious
-  code. A file does not need a comment announcing each region.
-- A comment earns its place only when it captures something the code can't: a
-  non-obvious decision, a gotcha or workaround, why a value is what it is, or a
-  link to a spec or issue.
+- No banner blocks or step-by-step narration of obvious code.
+- A comment earns its place only when it captures: a hardware constraint,
+  a non-obvious decision, a timing/memory tradeoff, or why a specific
+  implementation was chosen over alternatives.
+- **No magic numbers in code.** Use named constants instead; the name documents
+  the value's meaning better than any comment could.
 - Prefer self-documenting names and small functions over explanatory comments.
-- Keep doc comments minimal: a one-line purpose on an exported type or function is
-  plenty; don't write JSDoc that just repeats the signature.
 - When in doubt, leave the comment out.
 
 ## Writing
@@ -178,3 +153,34 @@ Over-commenting is a common AI tell, so resist it.
   READMEs, specs. They read as AI-generated.
 - Use a hyphen for `term - description` separators; rephrase prose with commas,
   parentheses, or a colon. Avoid en dashes and the ellipsis character too.
+
+## Libraries
+
+Current dependencies (see `platformio.ini`):
+- `Adafruit GFX Library` - graphics primitives
+- `Adafruit ST7735 and ST7789 Library` - TFT driver
+
+Add new libraries only when necessary. Prefer lightweight implementations
+that fit in Flash/SRAM constraints. Check library memory footprint before
+committing.
+
+## Chess Implementation Constraints
+
+From project requirements:
+- Full chess rules (castling, en passant, promotion, checkmate/stalemate)
+- Three difficulty levels: 700/900/1100 Elo (adjustable search depth or evaluation)
+- No move takeback
+- No time control
+- No move history display
+- No position analysis visualization
+- Minimal UI: board, piece selection cursor, game state
+
+Reference implementation available in `reference/3rd-party/bk_chess/` (PDP-11
+disassembly) for compact chess algorithm ideas, not for direct porting.
+
+## Budget Constraints
+
+- **Time:** Minimal development time. Reuse proven algorithms and libraries.
+- **Memory:** Must fit in 30 KB Flash + 2 KB SRAM. Profile every feature.
+- **Simplicity:** Favor straightforward implementations over clever optimizations
+  unless memory or performance requires it.

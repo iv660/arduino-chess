@@ -16,7 +16,13 @@ Start with your first real slice of functionality.
 
 ## Your features
 
-Replace these examples with your own features:
-
-- [ ] 1. **Feature one** - description
-- [ ] 2. **Feature two** - description
+- [ ] 1. **Chess library evaluation and integration** - Research and integrate MicroChess, mcu-max, htcw_chess, or Arduino Chess OLED; measure memory footprint; verify move generation and AI at 900 Elo
+- [ ] 2. **Core game state and board representation** - Define GameState structure, 8×8 board array, piece encoding, turn tracking, game phase enum
+- [ ] 3. **Display board rendering** - Draw 8×8 grid with alternating colors on ST7735, render square coordinates, display turn indicator text
+- [ ] 4. **Piece bitmap icons** - Create or source 8×8/12×12 monochrome bitmaps for all 12 piece types, store in PROGMEM, render at correct board positions
+- [ ] 5. **Joystick input and cursor navigation** - Poll analog joystick, map to board coordinates, move cursor with diagonal support, highlight selected square, handle edge boundaries
+- [ ] 6. **Move selection with legal-move filtering** - Select piece with joystick button, query chess engine for legal moves, restrict cursor to legal destination squares, execute move on second button press
+- [ ] 7. **Computer move integration** - Trigger AI move calculation after player move, display thinking indicator, execute computer move, update board and display
+- [ ] 8. **Game flow and lifecycle** - Random color assignment at startup, detect checkmate/stalemate/draw, display game result, handle Start button for new game
+- [ ] 9. **Memory optimization pass** - Profile RAM usage at runtime, optimize GameState size, reduce display buffer if needed, apply geometric piece fallback if bitmap memory critical
+- [ ] 10. **Hardware testing and polish** - End-to-end testing on XC Slim Pad hardware, verify joystick responsiveness, tune AI thinking time, fix display flicker if present

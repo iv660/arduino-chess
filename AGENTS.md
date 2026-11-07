@@ -13,16 +13,12 @@ for optional tool settings.
 
 ## What this is
 
-A description of your project and the problem it solves.
+**Arduino Chess** - A minimalist chess game for Arduino Nano with ST7735 TFT display.
+
+MVP chess program for human vs computer play with full chess rules, three difficulty levels (700/900/1100 Elo), joystick control, and random color selection. Built for the XC Slim Pad hardware configuration with strict time and budget constraints.
 
 This project is built with the **AI Blueprint**, a workflow layer, not an
-app skeleton. To start a new project, scaffold the app first in an empty folder
-(create-next-app, Vite, etc.), then overlay these files on top. Never run a
-framework scaffolder inside a directory that already holds the blueprint files
-(`AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `blueprint/`); it fails
-because the directory isn't empty.
-
-The workflow is defined by the local skills and context files below.
+app skeleton. The workflow is defined by the local skills and context files below.
 
 ## Proportional engineering
 
@@ -81,19 +77,13 @@ Skills: `adopt`, `audit`, `blueprint-doctor`, `blueprint-status`, `brief`,
 
 ## Commands
 
-<!-- blueprint:onboarding-required -->
-For a standard Next.js project. Change or remove if you're using something else.
+PlatformIO embedded development for Arduino Nano (ATmega328P).
 
-- Dev server: `npm run dev` (http://localhost:3000)
-- Build: `npm run build`
-- Production server: `npm run start`
-- Lint: `npm run lint`
+- Build: `pio run`
+- Upload: `pio run --target upload`
+- Serial monitor: `pio device monitor` (115200 baud)
+- Clean: `pio run --target clean`
 
 Testing is opt-in. If this project does not already have a unit test runner, run
 `/tests` or `$tests` to add one and update this section with the real test
 commands.
-
-Browser testing is also opt-in. Run `/tests browser` or `$tests browser` to add
-or normalize a browser harness and document its exact command as `Browser
-tests`. Check and Continuous Mode can then reuse it without installing tooling
-mid-feature.
