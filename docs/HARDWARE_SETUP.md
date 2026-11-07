@@ -51,7 +51,7 @@ The joystick provides two analog axes (X and Y) and one momentary switch:
 - Moving up: VRy increases (towards 1023)
 - Moving down: VRy decreases (towards 0)
 
-The switch is normally HIGH and goes LOW when pressed.
+The switch is normally HIGH (internal pull-up enabled in software) and goes LOW when pressed.
 
 ### Pause Button
 
@@ -102,7 +102,7 @@ The switch is normally HIGH and goes LOW when pressed.
 
 2. **SPI Conflict:** The built-in LED on pin D13 shares the SPI clock line. This may cause the LED to flicker during display updates. This is normal and does not affect functionality.
 
-3. **Pull-up Resistors:** The Pause and Start buttons are configured with internal pull-up resistors in software using `INPUT_PULLUP` mode. External pull-up resistors are not required but can be added (10kΩ recommended) if needed for noise immunity.
+3. **Pull-up Resistors:** All buttons (Joystick, Pause, and Start) are configured with internal pull-up resistors in software using `INPUT_PULLUP` mode. No external pull-up resistors are present in the hardware design. External pull-up resistors can be added (10kΩ recommended) if needed for additional noise immunity.
 
 4. **Display Orientation:** The ST7735 display can be used in different orientations. The software can rotate the display 0°, 90°, 180°, or 270° as needed.
 

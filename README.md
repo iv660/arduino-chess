@@ -49,11 +49,11 @@ pio device monitor
 ### Joystick
 - **X-axis:** A0 (analog)
 - **Y-axis:** A1 (analog)
-- **Button:** D2 (digital input, normally high)
+- **Button:** D2 (digital input with internal pull-up, normally high)
 
 ### Control Buttons
-- **Pause:** D3 (digital input, normally high)
-- **Start:** D4 (digital input, normally high)
+- **Pause:** D3 (digital input with internal pull-up, normally high)
+- **Start:** D4 (digital input with internal pull-up, normally high)
 
 ### Built-in LED
 - **LED:** D13
