@@ -164,6 +164,15 @@ Follow Clean Code: self-documenting names and clear structure beat comments.
   - ✗ `feat: add joystick input handling`
 - Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `revert`
 
+## Git Workflow
+
+- **Merging strategy:** All merges happen on the Git server (GitHub/GitLab), never locally
+- **Squash merge is forbidden:** Preserve full commit history from feature branches
+- **Local merge:** Only by explicit user request in the current conversation
+- **Default workflow:** Push feature branch → Create pull request → Merge on server
+- Feature branches are based on `main` and merged back to `main` via pull request
+- Never force-push, rebase shared branches, or amend pushed commits
+
 ## Libraries
 
 Current dependencies (see `platformio.ini`):
