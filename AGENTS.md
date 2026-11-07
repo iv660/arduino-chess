@@ -79,11 +79,9 @@ Skills: `adopt`, `audit`, `blueprint-doctor`, `blueprint-status`, `brief`,
 
 PlatformIO embedded development for Arduino Nano (ATmega328P).
 
-- Build: `pio run`
+- Build: `pio run -e nanoatmega328`
 - Upload: `pio run --target upload`
 - Serial monitor: `pio device monitor` (115200 baud)
 - Clean: `pio run --target clean`
-
-Testing is opt-in. If this project does not already have a unit test runner, run
-`/tests` or `$tests` to add one and update this section with the real test
-commands.
+- Test: `pio test -e native` (Unity tests on host)
+- Verify: `pio run -e nanoatmega328 && pio test -e native` (build + tests)
