@@ -18,7 +18,7 @@ Start with your first real slice of functionality.
 
 - [x] 1. **Chess library evaluation and integration** - Research and integrate MicroChess, mcu-max, htcw_chess, or Arduino Chess OLED; measure memory footprint; verify move generation and AI at 900 Elo
 - [x] 2. **Core game state and board representation** - Define GameState structure, 8×8 board array, piece encoding, turn tracking, game phase enum
-- [ ] 3. **Display board rendering** - Draw 8×8 grid with alternating colors on ST7735, render square coordinates, display turn indicator text
+- [x] 3. **Display board rendering** - Draw 8×8 grid with alternating colors on ST7735, render square coordinates, display turn indicator text
 - [ ] 4. **Piece bitmap icons** - Create or source 8×8/12×12 monochrome bitmaps for all 12 piece types, store in PROGMEM, render at correct board positions
 - [ ] 5. **Joystick input and cursor navigation** - Poll analog joystick, map to board coordinates, move cursor with diagonal support, highlight selected square, handle edge boundaries
 - [ ] 6. **Move selection with legal-move filtering** - Select piece with joystick button, query chess engine for legal moves, restrict cursor to legal destination squares, execute move on second button press
