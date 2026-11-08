@@ -6,6 +6,7 @@
 #include <Arduino.h>
 #include <mcu-max.h>
 #include "GameState.h"
+#include "Display.h"
 
 // Global game state
 GameState gameState;
@@ -19,6 +20,9 @@ void setup() {
 
   Serial.println(F("\n=== Arduino Chess - Starting ==="));
   
+  // Initialize display
+  initDisplay();
+  
   // Initialize game state
   initGameState(&gameState);
   
@@ -27,7 +31,14 @@ void setup() {
   Serial.print(sizeof(GameState));
   Serial.println(F(" bytes"));
   
-  Serial.println(F("\nReady for Feature 3: Display rendering"));
+  // Draw board and turn indicator
+  drawBoard(&gameState);
+  Serial.println(F("Board drawn"));
+  
+  drawTurnIndicator(&gameState);
+  Serial.println(F("Turn indicator shown"));
+  
+  Serial.println(F("\nDisplay ready"));
 }
 
 void loop() {
