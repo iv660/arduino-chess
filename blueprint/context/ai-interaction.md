@@ -176,10 +176,15 @@ decisions.
 
 ## Branching
 
-A new branch for every feature, fix, or rollback, using the prefixes in
-`blueprint/config.json`. Ask to delete the branch once merged. Continuous Mode's
-explicit invocation already authorizes deletion of each locally merged feature
-branch.
+**For this project:** Work in the chosen feature branch for all features unless
+the user or a specific feature explicitly requests a branch change. The AI agent
+may suggest switching to a feature branch if the project is currently on the root
+branch (main or master), but switching requires explicit user confirmation.
+
+**General Blueprint default (not used in this project):** A new branch for every
+feature, fix, or rollback, using the prefixes in `blueprint/config.json`. Ask to
+delete the branch once merged. Continuous Mode's explicit invocation already
+authorizes deletion of each locally merged feature branch.
 
 ## Commits
 
