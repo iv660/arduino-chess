@@ -85,3 +85,22 @@ PlatformIO embedded development for Arduino Nano (ATmega328P).
 - Clean: `pio run --target clean`
 - Test: `pio test -e native` (Unity tests on host)
 - Verify: `pio run -e nanoatmega328 && pio test -e native` (build + tests)
+
+## Commit messages
+
+- Use conventional commit format: `type: Subject line`
+- Subject after the prefix starts with a capital letter, like a sentence
+- Examples:
+  - ✓ `feat: Add joystick input handling`
+  - ✓ `fix: Correct board rendering coordinates`
+  - ✗ `feat: add joystick input handling`
+- Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `revert`
+
+## Git workflow
+
+- **Merging strategy:** All merges happen on the Git server (GitHub/GitLab), never locally
+- **Squash merge is forbidden:** Preserve full commit history from feature branches
+- **Local merge:** Only by explicit user request in the current conversation
+- **Default workflow:** Push feature branch → Create pull request → Merge on server
+- Feature branches are based on `main` and merged back to `main` via pull request
+- Never force-push, rebase shared branches, or amend pushed commits
