@@ -99,8 +99,10 @@ PlatformIO embedded development for Arduino Nano (ATmega328P).
 ## Git workflow
 
 - **Merging strategy:** All merges happen on the Git server (GitHub/GitLab), never locally
-- **Squash merge is forbidden:** Preserve full commit history from feature branches
-- **Local merge:** Only by explicit user request in the current conversation
-- **Default workflow:** Push feature branch → Create pull request → Merge on server
+- **AI agent restrictions:**
+  - **Never perform local merge** - merging is done on the server only
+  - **Never create pull requests** - only the user creates PRs
+  - **Never suggest or perform squash merge** - preserve full commit history
+- **Default workflow:** User pushes feature branch → User creates pull request → User merges on server
 - Feature branches are based on `main` and merged back to `main` via pull request
 - Never force-push, rebase shared branches, or amend pushed commits
