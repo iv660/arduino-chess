@@ -14,6 +14,9 @@ void initDisplay();
 // Draw the 8×8 chess board grid with alternating colors
 void drawBoard(const GameState* state);
 
+// Draw a single piece at the specified board position
+void drawPiece(uint8_t piece, uint8_t row, uint8_t col);
+
 // Draw the current turn indicator text at screen top
 void drawTurnIndicator(const GameState* state);
 
