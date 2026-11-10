@@ -16,11 +16,19 @@ constexpr int16_t JOYSTICK_CENTER = 512;
 constexpr int16_t JOYSTICK_DEADZONE = 200;
 constexpr int16_t JOYSTICK_THRESHOLD = 100;
 
-// Movement repeat delay in milliseconds
-constexpr unsigned long MOVE_REPEAT_DELAY_MS = 150;
+// Movement timing in milliseconds
+constexpr unsigned long MOVE_INITIAL_DELAY_MS = 800;   // Delay before first move
+constexpr unsigned long MOVE_REPEAT_DELAY_MS = 150;    // Delay between repeated moves
 
 // Track last movement time for repeat delay
 static unsigned long lastMoveTime = 0;
+
+// Track joystick deflection start time for initial delay
+static unsigned long deflectionStartTime = 0;
+
+// Track whether joystick is currently active (outside deadzone)
+// This prevents false triggers until joystick returns to neutral
+static bool joystickActive = false;
 
 void initInput() {
   // Set joystick button pin to INPUT_PULLUP (active LOW)
@@ -47,16 +55,38 @@ void updateCursor(GameState* state) {
   int16_t y = readJoystickY();
   
   // Check if joystick is within deadzone
-  if (abs(x) < JOYSTICK_DEADZONE && abs(y) < JOYSTICK_DEADZONE) {
-    // Reset movement timer when joystick returns to center
+  bool inDeadzone = (abs(x) < JOYSTICK_DEADZONE && abs(y) < JOYSTICK_DEADZONE);
+  
+  if (inDeadzone) {
+    // Joystick returned to neutral - reset state for next movement
+    joystickActive = false;
+    deflectionStartTime = 0;
     lastMoveTime = 0;
     return;
   }
   
-  // Check movement repeat delay
   unsigned long now = millis();
-  if (lastMoveTime != 0 && (now - lastMoveTime) < MOVE_REPEAT_DELAY_MS) {
-    return;
+  
+  // If this is the first time joystick left deadzone, allow immediate first move
+  if (!joystickActive) {
+    joystickActive = true;
+    deflectionStartTime = now;
+    // Fall through to execute first move immediately
+  } else {
+    // Subsequent moves: check appropriate delay
+    unsigned long timeSinceLastMove = now - lastMoveTime;
+    
+    if (lastMoveTime == deflectionStartTime) {
+      // Second move: use initial delay
+      if (timeSinceLastMove < MOVE_INITIAL_DELAY_MS) {
+        return;  // Too soon for second move
+      }
+    } else {
+      // Third and later moves: use repeat delay
+      if (timeSinceLastMove < MOVE_REPEAT_DELAY_MS) {
+        return;  // Too soon for repeat
+      }
+    }
   }
   
   // Map deflection to direction
