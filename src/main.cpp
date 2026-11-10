@@ -7,6 +7,7 @@
 #include <mcu-max.h>
 #include "GameState.h"
 #include "Display.h"
+#include "Input.h"
 
 // Global game state
 GameState gameState;
@@ -22,6 +23,9 @@ void setup() {
   
   // Initialize display
   initDisplay();
+  
+  // Initialize input hardware
+  initInput();
   
   // Initialize game state
   initGameState(&gameState);
@@ -42,5 +46,15 @@ void setup() {
 }
 
 void loop() {
-  // Game loop will be implemented in later features
+  // Store previous cursor position
+  uint8_t oldRow = gameState.cursorRow;
+  uint8_t oldCol = gameState.cursorCol;
+  
+  // Update cursor based on joystick input
+  updateCursor(&gameState);
+  
+  // Redraw board if cursor moved
+  if (gameState.cursorRow != oldRow || gameState.cursorCol != oldCol) {
+    drawBoard(&gameState);
+  }
 }

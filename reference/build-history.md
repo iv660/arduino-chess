@@ -10,4 +10,10 @@ all build attempts. Rollbacks preserve both the original feature and the reversa
 - **Build 1:** Completed - `blueprint/history/features/02-core-game-state-and-board-representation.md`
 
 ## Feature 3: Display board rendering
+- **Build 1:** Completed - `blueprint/history/features/03-display-board-rendering.md`
+
+## Feature 4: Piece bitmap icons
+- **Build 1:** Completed - `blueprint/history/features/04-piece-bitmap-icons.md`
+
+## Feature 5: Joystick input and cursor navigation
 - **Build 1:** In progress - `blueprint/context/current-feature.md`

@@ -251,6 +251,14 @@ void drawBoard(const GameState* state) {
       }
     }
   }
+  
+  // Draw cursor highlight
+  int16_t cursorX = BOARD_OFFSET_X + state->cursorCol * SQUARE_SIZE;
+  int16_t cursorY = BOARD_OFFSET_Y + state->cursorRow * SQUARE_SIZE;
+  
+  // Draw double-line yellow border for visibility
+  tft.drawRect(cursorX, cursorY, SQUARE_SIZE, SQUARE_SIZE, ST77XX_YELLOW);
+  tft.drawRect(cursorX + 1, cursorY + 1, SQUARE_SIZE - 2, SQUARE_SIZE - 2, ST77XX_YELLOW);
 }
 
 void drawTurnIndicator(const GameState* state) {
