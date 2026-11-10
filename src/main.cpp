@@ -53,8 +53,11 @@ void loop() {
   // Update cursor based on joystick input
   updateCursor(&gameState);
   
-  // Redraw board if cursor moved
+  // Optimized cursor redraw: only update old and new squares to avoid flicker
   if (gameState.cursorRow != oldRow || gameState.cursorCol != oldCol) {
-    drawBoard(&gameState);
+    // Redraw old square without cursor
+    drawSquare(&gameState, oldRow, oldCol, false);
+    // Draw new square with cursor
+    drawSquare(&gameState, gameState.cursorRow, gameState.cursorCol, true);
   }
 }

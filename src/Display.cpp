@@ -201,55 +201,61 @@ void initDisplay() {
   Serial.println(F("Display OK"));
 }
 
+void drawSquare(const GameState* state, uint8_t row, uint8_t col, bool drawCursor) {
+  // Calculate screen position
+  int16_t x = BOARD_OFFSET_X + col * SQUARE_SIZE;
+  int16_t y = BOARD_OFFSET_Y + row * SQUARE_SIZE;
+  
+  // Determine square color
+  bool isDark = ((col + row) % 2) == 1;
+  uint16_t color = isDark ? COLOR_DARK_SQUARE : COLOR_LIGHT_SQUARE;
+  
+  // Draw filled rectangle for this square
+  tft.fillRect(x, y, SQUARE_SIZE, SQUARE_SIZE, color);
+  
+  // Draw file label if on bottom row
+  if (row == 7) {
+    char file = 'a' + col;
+    tft.setTextSize(1);
+    tft.setTextColor(ST77XX_WHITE);
+    tft.setCursor(x + 1, y + 8);
+    tft.print(file);
+  }
+  
+  // Draw rank label if on rightmost column (actually drawn outside board)
+  // Skip for individual square redraws to avoid overdrawing
+  
+  // Draw piece if present
+  uint8_t piece = state->board[row][col];
+  if (piece != EMPTY_SQUARE) {
+    drawPiece(piece, row, col);
+  }
+  
+  // Draw cursor highlight if requested
+  if (drawCursor) {
+    tft.drawRect(x, y, SQUARE_SIZE, SQUARE_SIZE, ST77XX_YELLOW);
+    tft.drawRect(x + 1, y + 1, SQUARE_SIZE - 2, SQUARE_SIZE - 2, ST77XX_YELLOW);
+  }
+}
+
 void drawBoard(const GameState* state) {
   // Draw 8×8 chess board with alternating colors
   // Standard chess: a1 (bottom-left) is dark square
   for (uint8_t row = 0; row < 8; row++) {
     for (uint8_t col = 0; col < 8; col++) {
-      // Calculate screen position
-      int16_t x = BOARD_OFFSET_X + col * SQUARE_SIZE;
-      int16_t y = BOARD_OFFSET_Y + row * SQUARE_SIZE;
-      
-      // Determine square color
-      // Row 0 is rank 8 (top of screen), row 7 is rank 1 (bottom)
-      // Col 0 is file a, col 7 is file h
-      // a1 (col=0, row=7) should be dark: (0+7) % 2 == 1 -> dark
-      bool isDark = ((col + row) % 2) == 1;
-      uint16_t color = isDark ? COLOR_DARK_SQUARE : COLOR_LIGHT_SQUARE;
-      
-      // Draw filled rectangle for this square
-      tft.fillRect(x, y, SQUARE_SIZE, SQUARE_SIZE, color);
+      drawSquare(state, row, col, false);
     }
   }
   
-  // Draw file labels (a-h) inside bottom squares, lower-left corner
+  // Draw rank labels (1-8) on right side of board
   tft.setTextSize(1);
   tft.setTextColor(ST77XX_WHITE);
-  for (uint8_t col = 0; col < 8; col++) {
-    char file = 'a' + col;
-    int16_t x = BOARD_OFFSET_X + col * SQUARE_SIZE + 1; // Left edge + 1px
-    int16_t y = BOARD_OFFSET_Y + 7 * SQUARE_SIZE + 8;   // Bottom row, lower part
-    tft.setCursor(x, y);
-    tft.print(file);
-  }
-  
-  // Draw rank labels (1-8) on left side
   for (uint8_t row = 0; row < 8; row++) {
     char rank = '8' - row; // Row 0 = rank 8, row 7 = rank 1
     int16_t x = BOARD_OFFSET_X + 8 * SQUARE_SIZE + 2;   // Right of board
     int16_t y = BOARD_OFFSET_Y + row * SQUARE_SIZE + 4; // Vertically centered
     tft.setCursor(x, y);
     tft.print(rank);
-  }
-  
-  // Draw pieces on the board
-  for (uint8_t row = 0; row < 8; row++) {
-    for (uint8_t col = 0; col < 8; col++) {
-      uint8_t piece = state->board[row][col];
-      if (piece != EMPTY_SQUARE) {
-        drawPiece(piece, row, col);
-      }
-    }
   }
   
   // Draw cursor highlight
