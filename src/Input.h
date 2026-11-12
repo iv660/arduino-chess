@@ -21,6 +21,9 @@ int16_t readJoystickY();
 // Check if joystick button is currently pressed
 bool isJoystickButtonPressed();
 
+// Check if joystick button is newly pressed (debounced)
+bool isButtonNewlyPressed();
+
 // Update cursor position based on joystick input
 void updateCursor(GameState* state);
 

@@ -100,8 +100,10 @@ const uint8_t PROGMEM mask_pawn[] = {
 void drawPiece(uint8_t piece, uint8_t row, uint8_t col) {
   // Extract piece type (bits 0-2) and color (bit 3)
   uint8_t pieceType = piece & 0x07;
-  bool isBlack = (piece & 0x08) != 0;  // 0x08 bit set = black piece
-  
+
+  // Bit 0x8 set = black piece, clear = white piece.
+  bool isBlack = (piece & 0x08) != 0;
+
   // Skip empty squares
   if (pieceType == 0) {  // MCUMAX_EMPTY
     return;
@@ -148,10 +150,9 @@ void drawPiece(uint8_t piece, uint8_t row, uint8_t col) {
   
   // Determine piece colors
   // Bitmaps are designed for black pieces (bitmap bit 0 = black pixel)
-  // For black pieces: bitmap=0 -> black, bitmap=1 -> white
-  // For white pieces: invert colors: bitmap=0 -> white, bitmap=1 -> black
-  uint16_t primaryColor = isBlack ? ST77XX_WHITE : ST77XX_BLACK;
-  uint16_t secondaryColor = isBlack ? ST77XX_BLACK : ST77XX_WHITE;
+  // Black pieces use black as their primary color; white pieces use white.
+  uint16_t primaryColor = isBlack ? ST77XX_BLACK : ST77XX_WHITE;
+  uint16_t secondaryColor = isBlack ? ST77XX_WHITE : ST77XX_BLACK;
   
   // Render sprite pixel-by-pixel with transparency
   // Bitmap format: 16×16 pixels, 2 bytes per row (16 bits), MSB first
@@ -201,6 +202,21 @@ void initDisplay() {
   Serial.println(F("Display OK"));
 }
 
+/**
+ * Check if a square is a legal destination for the selected piece
+ */
+static bool isLegalDestination(const GameState* state, uint8_t row, uint8_t col) {
+  if (!state || !isPieceSelected(state)) return false;
+  
+  for (uint8_t i = 0; i < state->legalMoveCount; i++) {
+    if (state->legalMoves[i][0] == row && state->legalMoves[i][1] == col) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 void drawSquare(const GameState* state, uint8_t row, uint8_t col, bool drawCursor) {
   // Calculate screen position
   int16_t x = BOARD_OFFSET_X + col * SQUARE_SIZE;
@@ -222,8 +238,12 @@ void drawSquare(const GameState* state, uint8_t row, uint8_t col, bool drawCurso
     tft.print(file);
   }
   
-  // Draw rank label if on rightmost column (actually drawn outside board)
-  // Skip for individual square redraws to avoid overdrawing
+  // Draw legal move dot if this is a legal destination
+  if (isLegalDestination(state, row, col)) {
+    int16_t centerX = x + SQUARE_SIZE / 2;
+    int16_t centerY = y + SQUARE_SIZE / 2;
+    tft.fillCircle(centerX, centerY, 3, ST77XX_GREEN);
+  }
   
   // Draw piece if present
   uint8_t piece = state->board[row][col];
@@ -231,7 +251,14 @@ void drawSquare(const GameState* state, uint8_t row, uint8_t col, bool drawCurso
     drawPiece(piece, row, col);
   }
   
-  // Draw cursor highlight if requested
+  // Draw selected piece border if this is the selected square
+  if (isPieceSelected(state) && row == state->selectedRow && col == state->selectedCol) {
+    tft.drawRect(x, y, SQUARE_SIZE, SQUARE_SIZE, ST77XX_CYAN);
+    tft.drawRect(x + 1, y + 1, SQUARE_SIZE - 2, SQUARE_SIZE - 2, ST77XX_CYAN);
+    tft.drawRect(x + 2, y + 2, SQUARE_SIZE - 4, SQUARE_SIZE - 4, ST77XX_CYAN);
+  }
+  
+  // Draw cursor highlight on top if requested
   if (drawCursor) {
     tft.drawRect(x, y, SQUARE_SIZE, SQUARE_SIZE, ST77XX_YELLOW);
     tft.drawRect(x + 1, y + 1, SQUARE_SIZE - 2, SQUARE_SIZE - 2, ST77XX_YELLOW);
@@ -273,6 +300,7 @@ void drawTurnIndicator(const GameState* state) {
   int16_t y = 2;    // Top edge + small margin
   int16_t boxSize = 18;
   
+  // currentPlayer == 0 means white to move, == 1 means black to move
   if (state->currentPlayer == 0) {
     // White turn: white background, black text
     tft.fillRect(x, y, boxSize, boxSize, ST77XX_WHITE);

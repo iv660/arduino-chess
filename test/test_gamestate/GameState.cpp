@@ -4,7 +4,7 @@
  * The real implementation in src/ is used for the Arduino build.
  */
 
-#include "GameState.h"
+#include "../../src/GameState.h"
 #include <string.h>
 
 // Stub implementations for native testing
@@ -69,4 +69,40 @@ const char* getResultString(GameResult result) {
         case DRAW: return "Draw";
         default: return "Unknown";
     }
+}
+
+void selectPieceAt(GameState* state, uint8_t row, uint8_t col) {
+    // Stub for testing - marks piece as selected without querying engine
+    if (!state || row >= 8 || col >= 8) return;
+    
+    state->selectedRow = row;
+    state->selectedCol = col;
+    state->legalMoveCount = 0; // No engine, so no legal moves
+}
+
+void clearSelection(GameState* state) {
+    // Stub for testing - clears selection
+    if (!state) return;
+    
+    state->selectedRow = NO_SELECTION;
+    state->selectedCol = NO_SELECTION;
+    state->legalMoveCount = 0;
+}
+
+bool executeMove(GameState* state, uint8_t fromRow, uint8_t fromCol, uint8_t toRow, uint8_t toCol) {
+    // Stub for testing - simple board update without engine
+    if (!state || fromRow >= 8 || fromCol >= 8 || toRow >= 8 || toCol >= 8) {
+        return false;
+    }
+    
+    // Simple move: copy piece and clear source
+    state->board[toRow][toCol] = state->board[fromRow][fromCol];
+    state->board[fromRow][fromCol] = EMPTY_SQUARE;
+    
+    // Clear selection
+    state->selectedRow = NO_SELECTION;
+    state->selectedCol = NO_SELECTION;
+    state->legalMoveCount = 0;
+    
+    return true;
 }

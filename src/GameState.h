@@ -28,6 +28,14 @@ constexpr uint8_t EMPTY_SQUARE = 0;
 constexpr uint8_t NO_SELECTION = 255;
 constexpr uint8_t NO_EN_PASSANT = 255;
 
+// mcu-max exposes its internal side values through mcumax_get_current_side().
+constexpr uint8_t MCUMAX_ENGINE_WHITE_SIDE = 0x08;
+constexpr uint8_t MCUMAX_ENGINE_BLACK_SIDE = 0x10;
+
+constexpr uint8_t currentPlayerFromMcumaxSide(uint8_t engineSide) {
+  return engineSide == MCUMAX_ENGINE_BLACK_SIDE ? 1 : 0;
+}
+
 // Maximum legal moves for any position (conservative estimate)
 constexpr uint8_t MAX_LEGAL_MOVES = 64;
 
@@ -59,5 +67,10 @@ bool isValidSquare(uint8_t row, uint8_t col);
 bool isPieceSelected(const GameState* state);
 const char* getPhaseString(GamePhase phase);
 const char* getResultString(GameResult result);
+
+// Move selection helpers
+void selectPieceAt(GameState* state, uint8_t row, uint8_t col);
+void clearSelection(GameState* state);
+bool executeMove(GameState* state, uint8_t fromRow, uint8_t fromCol, uint8_t toRow, uint8_t toCol);
 
 #endif // GAMESTATE_H

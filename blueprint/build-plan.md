@@ -27,7 +27,7 @@ user confirmation.
 - [x] 3. **Display board rendering** - Draw 8×8 grid with alternating colors on ST7735, render square coordinates, display turn indicator text _(no new feature branch)_
 - [x] 4. **Piece bitmap icons** - Create or source 8×8/12×12 monochrome bitmaps for all 12 piece types, store in PROGMEM, render at correct board positions _(no new feature branch)_
 - [x] 5. **Joystick input and cursor navigation** - Poll analog joystick, map to board coordinates, move cursor with diagonal support, highlight selected square, handle edge boundaries _(no new feature branch)_
-- [ ] 6. **Move selection with legal-move filtering** - Select piece with joystick button, query chess engine for legal moves, restrict cursor to legal destination squares, execute move on second button press _(no new feature branch)_
+- [x] 6. **Move selection with legal-move filtering** - Select piece with joystick button, query chess engine for legal moves, restrict cursor to legal destination squares, execute move on second button press _(no new feature branch)_
 - [ ] 7. **Computer move integration** - Trigger AI move calculation after player move, display thinking indicator, execute computer move, update board and display _(no new feature branch)_
 - [ ] 8. **Game flow and lifecycle** - Random color assignment at startup, detect checkmate/stalemate/draw, display game result, handle Start button for new game _(no new feature branch)_
 - [ ] 9. **Memory optimization pass** - Profile RAM usage at runtime, optimize GameState size, reduce display buffer if needed, apply geometric piece fallback if bitmap memory critical _(no new feature branch)_

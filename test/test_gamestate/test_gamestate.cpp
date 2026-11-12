@@ -8,7 +8,7 @@
  */
 
 #include <unity.h>
-#include "GameState.h"
+#include "../../src/GameState.h"
 
 GameState testState;
 
@@ -28,7 +28,13 @@ void test_gamestate_size(void) {
         "GameState exceeds 210 byte budget");
 }
 
-// Test 2: Helper - isValidSquare
+// Test 2: mcu-max uses internal side values through mcumax_get_current_side()
+void test_mcumax_side_mapping(void) {
+    TEST_ASSERT_EQUAL_UINT8(0, currentPlayerFromMcumaxSide(MCUMAX_ENGINE_WHITE_SIDE));
+    TEST_ASSERT_EQUAL_UINT8(1, currentPlayerFromMcumaxSide(MCUMAX_ENGINE_BLACK_SIDE));
+}
+
+// Test 3: Helper - isValidSquare
 void test_is_valid_square(void) {
     TEST_ASSERT_TRUE(isValidSquare(0, 0));
     TEST_ASSERT_TRUE(isValidSquare(7, 7));
@@ -44,7 +50,7 @@ void test_is_valid_square(void) {
     TEST_ASSERT_FALSE(isValidSquare(255, 255));
 }
 
-// Test 3: Helper - getPiece bounds checking
+// Test 4: Helper - getPiece bounds checking
 void test_get_piece_bounds(void) {
     // Set up a known piece
     testState.board[3][4] = 0x05; // Some piece value
@@ -61,7 +67,7 @@ void test_get_piece_bounds(void) {
     TEST_ASSERT_EQUAL_UINT8(EMPTY_SQUARE, getPiece(nullptr, 0, 0));
 }
 
-// Test 4: Helper - isPieceSelected
+// Test 5: Helper - isPieceSelected
 void test_is_piece_selected(void) {
     // Initially nothing selected
     testState.selectedRow = NO_SELECTION;
@@ -87,7 +93,7 @@ void test_is_piece_selected(void) {
     TEST_ASSERT_FALSE(isPieceSelected(nullptr));
 }
 
-// Test 5: Helper - phase strings
+// Test 6: Helper - phase strings
 void test_phase_strings(void) {
     const char* str = getPhaseString(PLAYER_MOVE);
     TEST_ASSERT_NOT_NULL(str);
@@ -100,7 +106,7 @@ void test_phase_strings(void) {
     TEST_ASSERT_EQUAL_STRING("Game Over", str);
 }
 
-// Test 6: Helper - result strings
+// Test 7: Helper - result strings
 void test_result_strings(void) {
     const char* str = getResultString(IN_PROGRESS);
     TEST_ASSERT_NOT_NULL(str);
@@ -116,7 +122,7 @@ void test_result_strings(void) {
     TEST_ASSERT_EQUAL_STRING("Draw", str);
 }
 
-// Test 7: Board state manipulation
+// Test 8: Board state manipulation
 void test_board_state(void) {
     // Clear board
     for (uint8_t row = 0; row < 8; row++) {
@@ -137,7 +143,7 @@ void test_board_state(void) {
     TEST_ASSERT_EQUAL_UINT8(EMPTY_SQUARE, getPiece(&testState, 4, 4));
 }
 
-// Test 8: Game state fields
+// Test 9: Game state fields
 void test_game_state_fields(void) {
     // Set various game state values
     testState.currentPlayer = 1;
@@ -164,7 +170,7 @@ void test_game_state_fields(void) {
     TEST_ASSERT_EQUAL_UINT8(42, testState.enPassantTarget);
 }
 
-// Test 9: Legal moves buffer
+// Test 10: Legal moves buffer
 void test_legal_moves_buffer(void) {
     testState.legalMoveCount = 3;
     testState.legalMoves[0][0] = 6;
@@ -183,7 +189,7 @@ void test_legal_moves_buffer(void) {
     TEST_ASSERT_EQUAL_UINT8(4, testState.legalMoves[2][1]);
 }
 
-// Test 10: Constants validation
+// Test 11: Constants validation
 void test_constants(void) {
     TEST_ASSERT_EQUAL_UINT8(0, EMPTY_SQUARE);
     TEST_ASSERT_EQUAL_UINT8(255, NO_SELECTION);
@@ -195,6 +201,7 @@ int main(int argc, char **argv) {
     UNITY_BEGIN();
     
     RUN_TEST(test_gamestate_size);
+    RUN_TEST(test_mcumax_side_mapping);
     RUN_TEST(test_is_valid_square);
     RUN_TEST(test_get_piece_bounds);
     RUN_TEST(test_is_piece_selected);

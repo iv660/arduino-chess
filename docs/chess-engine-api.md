@@ -72,8 +72,8 @@ mcumax_piece mcumax_get_piece(mcumax_square square);
 
 **Parameters**:
 - `square`: Board square in 0xRF format (R=rank 0-7, F=file 0-7)
-  - Rank 0 = row 1 (white's back rank)
-  - Rank 7 = row 8 (black's back rank)
+  - Rank 0 = row 8 (black's back rank)
+  - Rank 7 = row 1 (white's back rank)
   - File 0 = column a, File 7 = column h
 
 **Returns**: `mcumax_piece` (uint8_t) with piece type and color:
@@ -124,13 +124,16 @@ mcumax_piece mcumax_get_current_side(void);
 
 **Description**: Returns the side to move.
 
-**Returns**:
-- `0` (not MCUMAX_BLACK): White to move
-- `MCUMAX_BLACK` (0x08): Black to move
+**Returns** (mcu-max v1.0.7 implementation):
+- `0x08`: White to move
+- `0x10`: Black to move
+
+`mcumax_get_current_side()` exposes the engine's internal side constants,
+which differ from the `MCUMAX_BLACK` bit used by `mcumax_get_piece()`.
 
 **Usage**:
 ```c
-if (mcumax_get_current_side() == MCUMAX_BLACK) {
+if (mcumax_get_current_side() == 0x10) {
     // It's black's turn
 } else {
     // It's white's turn
