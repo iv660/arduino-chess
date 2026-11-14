@@ -12,6 +12,39 @@
 // Global game state
 GameState gameState;
 
+/**
+ * Execute computer move using mcu-max engine
+ * Called when it's the computer's turn (assumes computer is black for Feature 7)
+ */
+void executeComputerMove(GameState* state) {
+  if (!state) return;
+
+  // Set phase to thinking
+  state->phase = COMPUTER_THINKING;
+
+  // Display thinking indicator
+  drawThinkingIndicator();
+
+  // Calculate best move with the minimum node budget that fits Nano stack limits.
+  // mcu-max depth 1 still recurses to its internal minimum depth, so keep this
+  // budget very small on the 2 KB ATmega328P.
+  mcumax_move move = mcumax_search_best_move(1, 1);
+
+  // Check for invalid move (no legal moves - checkmate or stalemate)
+  if (move.from == MCUMAX_SQUARE_INVALID) {
+    // No legal move available - game over
+    state->phase = GAME_OVER;
+    return;
+  }
+
+  // Execute the computer's move through the common state-sync path.
+  executeMove(state, move.from >> 4, move.from & 0x07,
+              move.to >> 4, move.to & 0x07);
+
+  // Return to player move phase
+  state->phase = PLAYER_MOVE;
+}
+
 void setup() {
   // Initialize serial for debugging
   Serial.begin(115200);
@@ -75,6 +108,14 @@ void loop() {
           // Move successful - redraw entire board and update turn indicator
           drawBoard(&gameState);
           drawTurnIndicator(&gameState);
+
+          // Check if it's the computer's turn (assume player is white, computer is black)
+          if (gameState.currentPlayer == 1) {
+            executeComputerMove(&gameState);
+            // Redraw board and turn indicator after computer move
+            drawBoard(&gameState);
+            drawTurnIndicator(&gameState);
+          }
         }
       }
     } else {

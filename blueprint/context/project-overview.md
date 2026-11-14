@@ -1,6 +1,6 @@
 # Arduino Chess
 
-<!-- blueprint:source-hash 1828af68 -->
+<!-- blueprint:source-hash 5a3f8c42 -->
 
 A minimalist chess game for Arduino Nano with ST7735 TFT display. MVP chess program for human vs computer play with full chess rules, 900 Elo AI difficulty, joystick control, and random color selection. Built for XC Slim Pad hardware under strict memory (2KB RAM) and time constraints.
 

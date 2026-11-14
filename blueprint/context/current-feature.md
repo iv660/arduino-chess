@@ -1,5 +1,7 @@
 # Current Feature
 
+**Status:** None in progress
+
 > **Generated file.** Holds the one feature, fix, or rollback being built in this checkout. Run
 > `/feature <number-or-name>` to spec a build-plan feature, or `/fix "<bug>"` for
 > an ad-hoc fix. Use `/rollback <completed-feature>` to plan a safe reversal.

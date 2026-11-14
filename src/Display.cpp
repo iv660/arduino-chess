@@ -318,3 +318,18 @@ void drawTurnIndicator(const GameState* state) {
     tft.print(F("B"));
   }
 }
+
+void drawThinkingIndicator() {
+  // Clear area and draw "Thinking..." text at bottom center
+  int16_t x = 30;
+  int16_t y = 150;
+
+  // Clear background
+  tft.fillRect(0, y, 128, 10, ST77XX_BLACK);
+
+  // Draw text
+  tft.setTextSize(1);
+  tft.setTextColor(ST77XX_WHITE);
+  tft.setCursor(x, y);
+  tft.print(F("Thinking..."));
+}

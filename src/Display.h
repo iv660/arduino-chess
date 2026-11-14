@@ -23,4 +23,7 @@ void drawPiece(uint8_t piece, uint8_t row, uint8_t col);
 // Draw the current turn indicator text at screen top
 void drawTurnIndicator(const GameState* state);
 
+// Draw "Thinking..." indicator during computer move calculation
+void drawThinkingIndicator();
+
 #endif // DISPLAY_H
